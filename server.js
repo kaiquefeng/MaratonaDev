@@ -29,12 +29,18 @@ nunjucks.configure("./", {
 
 // Configurar apresentacao da página
 server.get ("/", function(req, res) {
-    const donors = []
+
+    //Para apresentar os dados do bd no HTML
+    db.query("SELECT * FROM donors", function(err, result) {
+        if (err) return res.send("Erro de banco de dados.")
+
+        const donors = result.rows
     return res.render("index.html", { donors })
+    })
 })
 
 server.post ("/", function(req, res) {
-    //Pegar dados do formulário
+     //Pegar dados do formulário
     const name = req.body.name
     const email = req.body.email
     const blood = req.body.blood
@@ -44,8 +50,7 @@ server.post ("/", function(req, res) {
     // Se blood for vazio
     if (name == "" || email == "" || blood == "") {
         return res.send("Todos os campos são obrigatórios.")
-
-    }})
+    }
 
     // Adicionando novos valores no Banco de dados
     const query = `
@@ -59,7 +64,8 @@ server.post ("/", function(req, res) {
         if (err) return res.send("Erro no banco de dados")
     
         // Fluxo ideal
-    return res.redirect("/")
+        return res.redirect("/")
+})
 })
 
 //Ligar o servidor e permitir acesso na porta 3000
